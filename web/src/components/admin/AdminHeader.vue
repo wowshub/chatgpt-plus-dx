@@ -39,13 +39,13 @@
           <template #dropdown>
             <el-dropdown-menu>
 
-              <a href="https://github.com/yangjian102621/chatgpt-plus" target="_blank">
+              <a href="" target="_blank">
                 <el-dropdown-item>
                   <i class="iconfont icon-github"></i>
                   <span>{{ sysTitle }}</span>
                 </el-dropdown-item>
               </a>
-              <el-dropdown-item @click="showDialog = true">
+              <el-dropdown-item @click="">
                 <i class="iconfont icon-reward"></i>
                 <span>打赏作者</span>
               </el-dropdown-item>
