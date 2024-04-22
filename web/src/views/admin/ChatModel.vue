@@ -201,6 +201,7 @@ const platforms = ref([
   {name: "【OpenAI】ChatGPT", value: "OpenAI"},
   {name: "【讯飞】星火大模型", value: "XunFei"},
   {name: "【清华智普】ChatGLM", value: "ChatGLM"},
+  {name: "【智普清言V4】ZhipuGLM", value: "ZhipuGLM"},
   {name: "【百度】文心一言", value: "Baidu"},
   {name: "【微软】Azure", value: "Azure"},
   {name: "【阿里】通义千问", value: "QWen"},
