@@ -9,7 +9,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
 	"html/template"
 	"io"
 	"strings"
@@ -17,9 +16,9 @@ import (
 	"unicode/utf8"
 )
 
-// 清华大学 ChatGML 消息发送实现
+// 清华大学 ZhiPuGLM 消息发送实现
 
-func (h *ChatHandler) sendChatGLMMessage(
+func (h *ChatHandler) sendZhiPuGLMMessage(
 	chatCtx []types.Message,
 	req types.ApiRequest,
 	userVo vo.User,
@@ -89,10 +88,10 @@ func (h *ChatHandler) sendChatGLMMessage(
 			case "finish":
 				break
 			case "error":
-				utils.ReplyMessage(ws, fmt.Sprintf("**调用 ChatGLM API 出错：%s**", content))
+				utils.ReplyMessage(ws, fmt.Sprintf("**调用 ZhiPuGLM API 出错：%s**", content))
 				break
 			case "interrupted":
-				utils.ReplyMessage(ws, "**调用 ChatGLM API 出错，当前输出被中断！**")
+				utils.ReplyMessage(ws, "**调用 ZhiPuGLM API 出错，当前输出被中断！**")
 			}
 
 		} // end for
@@ -165,7 +164,6 @@ func (h *ChatHandler) sendChatGLMMessage(
 			if res.Error != nil {
 				logger.Error("failed to save reply history message: ", res.Error)
 			}
-			logger.Info("回答：", message.Content)
 
 			// 更新用户算力
 			h.subUserPower(userVo, session, promptToken, replyTokens)
@@ -203,35 +201,9 @@ func (h *ChatHandler) sendChatGLMMessage(
 			return fmt.Errorf("error with decode response: %v", err)
 		}
 		if !res.Success {
-			utils.ReplyMessage(ws, "请求 ChatGLM 失败："+res.Msg)
+			utils.ReplyMessage(ws, "请求 ZhiPuGLM 失败："+res.Msg)
 		}
 	}
 
 	return nil
-}
-
-func (h *ChatHandler) getChatGLMToken(apiKey string) (string, error) {
-	ctx := context.Background()
-	tokenString, err := h.redis.Get(ctx, apiKey).Result()
-	if err == nil {
-		return tokenString, nil
-	}
-
-	expr := time.Hour * 2
-	key := strings.Split(apiKey, ".")
-	if len(key) != 2 {
-		return "", fmt.Errorf("invalid api key: %s", apiKey)
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"api_key":   key[0],
-		"timestamp": time.Now().Unix(),
-		"exp":       time.Now().Add(expr).Add(time.Second * 10).Unix(),
-	})
-	token.Header["alg"] = "HS256"
-	token.Header["sign_type"] = "SIGN"
-	delete(token.Header, "typ")
-	// Sign and get the complete encoded token as a string using the secret
-	tokenString, err = token.SignedString([]byte(key[1]))
-	h.redis.Set(ctx, apiKey, tokenString, expr)
-	return tokenString, err
 }

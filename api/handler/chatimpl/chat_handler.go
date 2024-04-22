@@ -156,7 +156,7 @@ func (h *ChatHandler) ChatHandle(c *gin.Context) {
 			ctx, cancel := context.WithCancel(context.Background())
 			h.App.ReqCancelFunc.Put(sessionId, cancel)
 			// 回复消息
-			err = h.sendMessage(ctx, session, chatRole, utils.InterfaceToString(message.Content), client)
+			err = h.SendMessage(ctx, session, chatRole, utils.InterfaceToString(message.Content), client)
 			if err != nil {
 				logger.Error(err)
 				utils.ReplyChunkMessage(client, types.WsMessage{Type: types.WsEnd})
@@ -169,7 +169,7 @@ func (h *ChatHandler) ChatHandle(c *gin.Context) {
 	}()
 }
 
-func (h *ChatHandler) sendMessage(ctx context.Context, session *types.ChatSession, role model.ChatRole, prompt string, ws *types.WsClient) error {
+func (h *ChatHandler) SendMessage(ctx context.Context, session *types.ChatSession, role model.ChatRole, prompt string, ws *types.WsClient) error {
 	if !h.App.Debug {
 		defer func() {
 			if r := recover(); r != nil {
@@ -346,6 +346,8 @@ func (h *ChatHandler) sendMessage(ctx context.Context, session *types.ChatSessio
 		return h.sendOpenAiMessage(chatCtx, req, userVo, ctx, session, role, prompt, ws)
 	case types.ChatGLM:
 		return h.sendChatGLMMessage(chatCtx, req, userVo, ctx, session, role, prompt, ws)
+	case types.ZhiPuGLM:
+		return h.sendZhiPuGLMMessage(chatCtx, req, userVo, ctx, session, role, prompt, ws)
 	case types.Baidu:
 		return h.sendBaiduMessage(chatCtx, req, userVo, ctx, session, role, prompt, ws)
 	case types.XunFei:
@@ -442,6 +444,9 @@ func (h *ChatHandler) doRequest(ctx context.Context, req types.ApiRequest, platf
 		req.Prompt = req.Messages // 使用 prompt 字段替代 message 字段
 		req.Messages = nil
 		break
+	case types.ZhiPuGLM:
+		apiURL = apiKey.ApiURL
+		break
 	case types.Baidu:
 		apiURL = strings.Replace(apiKey.ApiURL, "{model}", req.Model, 1)
 		break
@@ -501,6 +506,9 @@ func (h *ChatHandler) doRequest(ctx context.Context, req types.ApiRequest, platf
 			return nil, err
 		}
 		request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+		break
+	case types.ZhiPuGLM:
+		request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", apiKey.Value))
 		break
 	case types.Baidu:
 		request.RequestURI = ""

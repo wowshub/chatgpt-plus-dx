@@ -123,6 +123,7 @@ type Platform string
 const OpenAI = Platform("OpenAI")
 const Azure = Platform("Azure")
 const ChatGLM = Platform("ChatGLM")
+const ZhiPuGLM = Platform("ZhiPuGLM")
 const Baidu = Platform("Baidu")
 const XunFei = Platform("XunFei")
 const QWen = Platform("QWen")
