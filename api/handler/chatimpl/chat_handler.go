@@ -221,7 +221,7 @@ func (h *ChatHandler) SendMessage(ctx context.Context, session *types.ChatSessio
 		Stream: true,
 	}
 	switch session.Model.Platform {
-	case types.Azure, types.ChatGLM, types.Baidu, types.XunFei:
+	case types.Azure, types.ChatGLM, types.ZhiPuGLM, types.Baidu, types.XunFei:
 		req.Temperature = session.Model.Temperature
 		req.MaxTokens = session.Model.MaxTokens
 		break

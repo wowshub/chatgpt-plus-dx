@@ -16,6 +16,16 @@ import (
 	"unicode/utf8"
 )
 
+type ZPChoiceItem struct {
+	Index  int     `json:"index"`
+	Finish string  `json:"finish_reason,omitempty"`
+	Delta  ZPDelta `json:"delta"`
+}
+type ZPDelta struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
 // 清华大学 ZhiPuGLM 消息发送实现
 
 func (h *ChatHandler) sendZhiPuGLMMessage(
@@ -55,6 +65,12 @@ func (h *ChatHandler) sendZhiPuGLMMessage(
 		replyCreatedAt := time.Now() // 记录回复时间
 		// 循环读取 Chunk 消息
 		var message = types.Message{}
+		var zpMessage struct {
+			Id      string         `json:"id"`
+			Created int            `json:"created"`
+			Model   string         `json:"model"`
+			Choices []ZPChoiceItem `json:"choices"`
+		}
 		var contents = make([]string, 0)
 		var event, content string
 		scanner := bufio.NewScanner(response.Body)
@@ -63,13 +79,24 @@ func (h *ChatHandler) sendZhiPuGLMMessage(
 			if len(line) < 5 || strings.HasPrefix(line, "id:") {
 				continue
 			}
-			if strings.HasPrefix(line, "event:") {
-				event = line[6:]
+			if strings.HasPrefix(line, "data:[DONE]") {
+				event = "stop"
 				continue
 			}
 
 			if strings.HasPrefix(line, "data:") {
-				content = line[5:]
+				content_json := line[5:]
+				err := json.Unmarshal([]byte(content_json), &zpMessage)
+				if err != nil {
+					logger.Error(err)
+					continue
+				}
+				content = zpMessage.Choices[0].Delta.Content
+				if zpMessage.Choices[0].Finish != "" {
+					event = zpMessage.Choices[0].Finish
+				} else {
+					event = "add"
+				}
 			}
 			// 处理代码换行
 			if len(content) == 0 {
@@ -85,7 +112,7 @@ func (h *ChatHandler) sendZhiPuGLMMessage(
 					Content: utils.InterfaceToString(content),
 				})
 				contents = append(contents, content)
-			case "finish":
+			case "stop":
 				break
 			case "error":
 				utils.ReplyMessage(ws, fmt.Sprintf("**调用 ZhiPuGLM API 出错：%s**", content))
@@ -167,6 +194,8 @@ func (h *ChatHandler) sendZhiPuGLMMessage(
 
 			// 更新用户算力
 			h.subUserPower(userVo, session, promptToken, replyTokens)
+
+			logger.Info("回答：", message.Content)
 
 			// 保存当前会话
 			var chatItem model.ChatItem
