@@ -160,6 +160,11 @@ const platforms = ref([
     api_url: "https://open.bigmodel.cn/api/paas/v3/model-api/{model}/sse-invoke"
   },
   {
+    name: "【智普清言V4】ZhiPuGLM",
+    value: "ZhiPuGLM",
+    api_url: "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+  },
+  {
     name: "【百度】文心一言",
     value: "Baidu",
     api_url: "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/{model}"

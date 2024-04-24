@@ -198,7 +198,7 @@ func (h *ChatHandler) sendAzureMessage(
 			logger.Error(res.Error.Message)
 			utils.ReplyMessage(ws, "当前会话上下文长度超出限制，已为您清空会话上下文！")
 			h.App.ChatContexts.Delete(session.ChatId)
-			return h.sendMessage(ctx, session, role, prompt, ws)
+			return h.SendMessage(ctx, session, role, prompt, ws)
 		} else {
 			utils.ReplyMessage(ws, "请求 Azure API 失败："+res.Error.Message)
 		}

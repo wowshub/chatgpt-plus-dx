@@ -9,7 +9,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
 	"html/template"
 	"io"
 	"strings"
@@ -17,9 +16,19 @@ import (
 	"unicode/utf8"
 )
 
-// 清华大学 ChatGML 消息发送实现
+type ZPChoiceItem struct {
+	Index  int     `json:"index"`
+	Finish string  `json:"finish_reason,omitempty"`
+	Delta  ZPDelta `json:"delta"`
+}
+type ZPDelta struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
 
-func (h *ChatHandler) sendChatGLMMessage(
+// 清华大学 ZhiPuGLM 消息发送实现
+
+func (h *ChatHandler) sendZhiPuGLMMessage(
 	chatCtx []types.Message,
 	req types.ApiRequest,
 	userVo vo.User,
@@ -56,6 +65,12 @@ func (h *ChatHandler) sendChatGLMMessage(
 		replyCreatedAt := time.Now() // 记录回复时间
 		// 循环读取 Chunk 消息
 		var message = types.Message{}
+		var zpMessage struct {
+			Id      string         `json:"id"`
+			Created int            `json:"created"`
+			Model   string         `json:"model"`
+			Choices []ZPChoiceItem `json:"choices"`
+		}
 		var contents = make([]string, 0)
 		var event, content string
 		scanner := bufio.NewScanner(response.Body)
@@ -64,13 +79,24 @@ func (h *ChatHandler) sendChatGLMMessage(
 			if len(line) < 5 || strings.HasPrefix(line, "id:") {
 				continue
 			}
-			if strings.HasPrefix(line, "event:") {
-				event = line[6:]
+			if strings.HasPrefix(line, "data:[DONE]") {
+				event = "stop"
 				continue
 			}
 
 			if strings.HasPrefix(line, "data:") {
-				content = line[5:]
+				content_json := line[5:]
+				err := json.Unmarshal([]byte(content_json), &zpMessage)
+				if err != nil {
+					logger.Error(err)
+					continue
+				}
+				content = zpMessage.Choices[0].Delta.Content
+				if zpMessage.Choices[0].Finish != "" {
+					event = zpMessage.Choices[0].Finish
+				} else {
+					event = "add"
+				}
 			}
 			// 处理代码换行
 			if len(content) == 0 {
@@ -86,13 +112,13 @@ func (h *ChatHandler) sendChatGLMMessage(
 					Content: utils.InterfaceToString(content),
 				})
 				contents = append(contents, content)
-			case "finish":
+			case "stop":
 				break
 			case "error":
-				utils.ReplyMessage(ws, fmt.Sprintf("**调用 ChatGLM API 出错：%s**", content))
+				utils.ReplyMessage(ws, fmt.Sprintf("**调用 ZhiPuGLM API 出错：%s**", content))
 				break
 			case "interrupted":
-				utils.ReplyMessage(ws, "**调用 ChatGLM API 出错，当前输出被中断！**")
+				utils.ReplyMessage(ws, "**调用 ZhiPuGLM API 出错，当前输出被中断！**")
 			}
 
 		} // end for
@@ -165,10 +191,11 @@ func (h *ChatHandler) sendChatGLMMessage(
 			if res.Error != nil {
 				logger.Error("failed to save reply history message: ", res.Error)
 			}
-			logger.Info("回答：", message.Content)
 
 			// 更新用户算力
 			h.subUserPower(userVo, session, promptToken, replyTokens)
+
+			logger.Info("回答：", message.Content)
 
 			// 保存当前会话
 			var chatItem model.ChatItem
@@ -203,35 +230,9 @@ func (h *ChatHandler) sendChatGLMMessage(
 			return fmt.Errorf("error with decode response: %v", err)
 		}
 		if !res.Success {
-			utils.ReplyMessage(ws, "请求 ChatGLM 失败："+res.Msg)
+			utils.ReplyMessage(ws, "请求 ZhiPuGLM 失败："+res.Msg)
 		}
 	}
 
 	return nil
-}
-
-func (h *ChatHandler) getChatGLMToken(apiKey string) (string, error) {
-	ctx := context.Background()
-	tokenString, err := h.redis.Get(ctx, apiKey).Result()
-	if err == nil {
-		return tokenString, nil
-	}
-
-	expr := time.Hour * 2
-	key := strings.Split(apiKey, ".")
-	if len(key) != 2 {
-		return "", fmt.Errorf("invalid api key: %s", apiKey)
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"api_key":   key[0],
-		"timestamp": time.Now().Unix(),
-		"exp":       time.Now().Add(expr).Add(time.Second * 10).Unix(),
-	})
-	token.Header["alg"] = "HS256"
-	token.Header["sign_type"] = "SIGN"
-	delete(token.Header, "typ")
-	// Sign and get the complete encoded token as a string using the secret
-	tokenString, err = token.SignedString([]byte(key[1]))
-	h.redis.Set(ctx, apiKey, tokenString, expr)
-	return tokenString, err
 }
