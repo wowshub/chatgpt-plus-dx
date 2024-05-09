@@ -132,6 +132,8 @@ func (h *MidJourneyHandler) Image(c *gin.Context) {
 	}
 	if data.Quality > 0 {
 		params += fmt.Sprintf(" --q %.2f", data.Quality)
+	} else {
+		params += " --q 0.25"
 	}
 	if data.Tile {
 		params += " --tile "
