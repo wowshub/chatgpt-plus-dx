@@ -327,7 +327,7 @@
                   </div>
                 </el-tab-pane>
 
-                <el-tab-pane name="cref">
+                <el-tab-pane name="cref" >
                   <template #label>
                     <el-badge value="New">
                       <span>一致性</span>
@@ -356,7 +356,7 @@
                     </el-form-item>
                   </div>
 
-                  <div class="param-line">
+                  <!-- <div class="param-line">
                     <el-form-item label="风格一致性：" prop="sref">
                       <el-input v-model="params.sref" placeholder="请输入图片URL或者上传图片"
                                 style="--el-input-focus-border-color:#47fff1; --el-input-text-color:#ffffff; max-width: 500px; width: 100%"
@@ -375,7 +375,7 @@
                         </template>
                       </el-input>
                     </el-form-item>
-                  </div>
+                  </div> -->
 
                   <div class="param-line" style="padding-top: 10px">
                     <el-form-item label="参考权重：">
@@ -707,6 +707,10 @@ const options = [
   {
     value: 0,
     label: '默认'
+  },
+  {
+    value: 0.1,
+    label: '略小'
   },
   {
     value: 0.25,
