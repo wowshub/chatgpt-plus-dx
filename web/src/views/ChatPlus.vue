@@ -260,7 +260,7 @@ import ChatMidJourney from "@/components/ChatMidJourney.vue";
 import FileSelect from "@/components/FileSelect.vue";
 import LoginDialog from "@/components/LoginDialog.vue";
 
-const title = ref('ChatGPT-智能助手');
+const title = ref('AI-智能助手');
 const models = ref([])
 const modelID = ref(0)
 const chatData = ref([]);

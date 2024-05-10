@@ -9,7 +9,14 @@
     <template #header="{titleId, titleClass }">
       <div class="header">
         <div class="title" v-if="login">用户登录</div>
-        <div class="title" v-else>用户注册</div>
+        <div class="title" v-else>
+          <span>用户注册</span>
+          <el-tooltip effect="light" content="{{regTxt}}" placement="right">
+                <el-icon>
+                  <InfoFilled/>
+                </el-icon>
+           </el-tooltip>
+        </div>
         <div class="close-icon">
           <el-icon @click="close">
             <Close/>
@@ -105,9 +112,7 @@
                         v-model="data.username"
                         autocomplete="off">
                 <template #prefix>
-                  <el-icon>
-                    <Iphone/>
-                  </el-icon>
+                  <el-icon name="email"></el-icon>
                 </template>
               </el-input>
             </div>
@@ -255,6 +260,7 @@ const activeName = ref("mobile")
 const wxImg = ref("/images/wx.png")
 // eslint-disable-next-line no-undef
 const emits = defineEmits(['hide', 'success']);
+const regTxt = ref(process.env.VUE_APP_REG_TEXT);
 
 httpGet("/api/config/get?key=system").then(res => {
   if (res.data) {

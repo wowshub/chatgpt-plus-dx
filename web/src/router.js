@@ -181,7 +181,7 @@ const routes = [
     {
         name: 'mobile',
         path: '/mobile',
-        meta: {title: 'Geek-AI v4.0'},
+        meta: {title: 'HOP-AI v4.0'},
         component: () => import('@/views/mobile/Home.vue'),
         redirect: '/mobile/chat',
         children: [

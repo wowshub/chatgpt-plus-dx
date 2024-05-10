@@ -126,7 +126,7 @@ import {arrayContains} from "@/utils/libs";
 import {setUserToken} from "@/store/session";
 
 const router = useRouter();
-const title = ref('ChatPlus 用户注册');
+const title = ref(process.env.VUE_APP_NAME+' 用户注册');
 const formData = ref({
   username: '',
   password: '',
