@@ -10,12 +10,19 @@
       <div class="header">
         <div class="title" v-if="login">用户登录</div>
         <div class="title" v-else>
-          <span>用户注册</span>
-          <el-tooltip effect="light" content="{{regTxt}}" placement="right">
+          用户注册
+          <el-tag v-text="regTxt"></el-tag>
+          <!-- <div class="info">
+              <el-tooltip
+                  effect="dark"
+                  :content="regTxt"
+                  raw-content
+                  placement="right">
                 <el-icon>
                   <InfoFilled/>
                 </el-icon>
-           </el-tooltip>
+              </el-tooltip>
+          </div> -->
         </div>
         <div class="close-icon">
           <el-icon @click="close">
@@ -235,6 +242,7 @@ import {Checked, Close, Iphone, Lock, Message, Position, User} from "@element-pl
 import SendMsg from "@/components/SendMsg.vue";
 import {arrayContains} from "@/utils/libs";
 import {useRouter} from "vue-router";
+import {InfoFilled} from "@element-plus/icons-vue";
 
 // eslint-disable-next-line no-undef
 const props = defineProps({
