@@ -119,7 +119,9 @@
                         v-model="data.username"
                         autocomplete="off">
                 <template #prefix>
-                  <el-icon name="email"></el-icon>
+                  <el-icon>
+                    <Message/>
+                  </el-icon>
                 </template>
               </el-input>
             </div>
@@ -151,7 +153,7 @@
                         autocomplete="off">
                 <template #prefix>
                   <el-icon>
-                    <Iphone/>
+                    <Memo/>
                   </el-icon>
                 </template>
               </el-input>
@@ -191,7 +193,7 @@
                     autocomplete="off">
             <template #prefix>
               <el-icon>
-                <Message/>
+                <Notebook/>
               </el-icon>
             </template>
           </el-input>
@@ -238,7 +240,7 @@ import {httpGet, httpPost} from "@/utils/http";
 import {ElMessage} from "element-plus";
 import {setUserToken} from "@/store/session";
 import {validateEmail, validateMobile} from "@/utils/validate";
-import {Checked, Close, Iphone, Lock, Message, Position, User} from "@element-plus/icons-vue";
+import {Checked, Close, Iphone, Lock, Message, Notebook, Memo, Position, User} from "@element-plus/icons-vue";
 import SendMsg from "@/components/SendMsg.vue";
 import {arrayContains} from "@/utils/libs";
 import {useRouter} from "vue-router";

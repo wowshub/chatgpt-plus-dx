@@ -70,8 +70,8 @@
                 <el-dropdown-item>
                   <i class="iconfont icon-github"></i>
                   <span>
-                    powered by
-                    <el-link type="primary" href="" target="_blank">chatgpt-plus-v4</el-link>
+                    Powered by
+                    <el-link type="primary" href="" target="_blank">{{ author }}</el-link>
                  </span>
                 </el-dropdown-item>
               </el-dropdown-menu>
@@ -260,7 +260,8 @@ import ChatMidJourney from "@/components/ChatMidJourney.vue";
 import FileSelect from "@/components/FileSelect.vue";
 import LoginDialog from "@/components/LoginDialog.vue";
 
-const title = ref('AI-智能助手');
+const author = ref(process.env.VUE_APP_AUTHER)
+const title = ref(process.env.VUE_APP_TITLE);
 const models = ref([])
 const modelID = ref(0)
 const chatData = ref([]);

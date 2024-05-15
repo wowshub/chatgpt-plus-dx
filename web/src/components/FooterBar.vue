@@ -15,7 +15,7 @@ import {ref} from "vue";
 
 const title = ref(process.env.VUE_APP_TITLE)
 const version = ref(process.env.VUE_APP_VERSION)
-const author = ref('HOP')
+const author = ref(process.env.VUE_APP_AUTHER)
 </script>
 
 <style scoped lang="stylus">
