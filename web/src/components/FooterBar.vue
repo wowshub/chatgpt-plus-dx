@@ -1,8 +1,8 @@
 <template>
-  <div class="container">
+  <div class="foot-container">
     <div class="footer">
       Powered by {{ author }} @
-      <el-link type="primary" href="" target="_blank">
+      <el-link type="primary" href="" target="_blank" style="--el-link-text-color:#ffffff">
         {{ title }} -
         {{ version }}
       </el-link>
@@ -19,7 +19,7 @@ const author = ref(process.env.VUE_APP_AUTHER)
 </script>
 
 <style scoped lang="stylus">
-.container {
+.foot-container {
   position: fixed;
   left: 0;
   bottom: 0;
