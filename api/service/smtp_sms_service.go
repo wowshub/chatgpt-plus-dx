@@ -21,8 +21,8 @@ func NewSmtpService(appConfig *types.AppConfig) *SmtpService {
 }
 
 func (s *SmtpService) SendVerifyCode(to string, code int) error {
-	subject := "Geek-AI 注册验证码"
-	body := fmt.Sprintf("您正在注册 Geek-AI 助手账户，注册验证码为 %d，请不要告诉他人。如非本人操作，请忽略此邮件。", code)
+	subject := "HOP-AI 注册验证码"
+	body := fmt.Sprintf("您正在注册 HOP-AI 助手账户，注册验证码为 %d，请不要告诉他人。如非本人操作，请忽略此邮件。", code)
 
 	auth := smtp.PlainAuth("", s.config.From, s.config.Password, s.config.Host)
 	if s.config.UseTls {
