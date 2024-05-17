@@ -44,6 +44,12 @@
                 </div>
               </div>
             </el-form-item>
+            <el-form-item label="邮箱注册赠送算力" prop="email_init_power">
+              <el-input v-model.number="system['email_init_power']" placeholder="新用户邮箱注册赠送算力"/>
+            </el-form-item>
+            <el-form-item label="手机号注册赠送算力" prop="phone_init_power">
+              <el-input v-model.number="system['phone_init_power']" placeholder="新用户手机号注册赠送算力"/>
+            </el-form-item>
             <el-form-item label="MJ绘图算力" prop="mj_power">
               <div class="tip-input">
                 <el-input v-model.number="system['mj_power']" placeholder=""/>
