@@ -148,8 +148,8 @@ type SystemConfig struct {
 	DailyPower     int    `json:"daily_power,omitempty"`      // 每日赠送算力
 	InvitePower    int    `json:"invite_power,omitempty"`     // 邀请新用户赠送算力值
 	VipMonthPower  int    `json:"vip_month_power,omitempty"`  // VIP 会员每月赠送的算力值
-	emailInitPower int    `json:"email_init_power,omitempty"` // 邮件注册赠送算力值
-	phoneInitPower int    `json:"phone_init_power,omitempty"` // 手机注册赠送算力值
+	EmailInitPower int    `json:"email_init_power,omitempty"` // 邮件注册赠送算力值
+	PhoneInitPower int    `json:"phone_init_power,omitempty"` // 手机注册赠送算力值
 
 	RegisterWays    []string `json:"register_ways,omitempty"`    // 注册方式：支持手机（mobile），邮箱注册（email），账号密码注册
 	EnabledRegister bool     `json:"enabled_register,omitempty"` // 是否开放注册

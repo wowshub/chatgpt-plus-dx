@@ -63,6 +63,12 @@ func (h *UserHandler) Register(c *gin.Context) {
 			return
 		}
 	}
+	initPower := h.App.SysConfig.InitPower
+	if data.RegWay == "mobile" {
+		initPower = h.App.SysConfig.PhoneInitPower
+	} else if data.RegWay == "email" {
+		initPower = h.App.SysConfig.EmailInitPower
+	}
 
 	// 验证邀请码
 	inviteCode := model.InviteCode{}
@@ -92,7 +98,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 		Status:     true,
 		ChatRoles:  utils.JsonEncode([]string{"gpt"}),               // 默认只订阅通用助手角色
 		ChatModels: utils.JsonEncode(h.App.SysConfig.DefaultModels), // 默认开通的模型
-		Power:      h.App.SysConfig.InitPower,
+		Power:      initPower,
 	}
 
 	res = h.DB.Create(&user)
