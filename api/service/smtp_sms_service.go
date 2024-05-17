@@ -40,6 +40,8 @@ func (s *SmtpService) send(auth smtp.Auth, to string, subject string, body strin
 	message.WriteString(fmt.Sprintf("From: \"%s\" <%s>\r\n", s.config.AppName, s.config.From))
 	message.WriteString(fmt.Sprintf("To: %s\r\n", to))
 	message.WriteString(fmt.Sprintf("Subject: %s\r\n", encodedSubject))
+	message.WriteString("MIME-Version: 1.0\r\n")
+	message.WriteString("Content-Type: text/plain; charset=\"UTF-8\"\r\n")
 	message.WriteString("\r\n" + body)
 
 	// 发送邮件
