@@ -63,6 +63,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 			return
 		}
 	}
+	
 	initPower := h.App.SysConfig.InitPower
 	if data.RegWay == "mobile" {
 		initPower = h.App.SysConfig.PhoneInitPower
