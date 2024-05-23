@@ -62,15 +62,16 @@ func (h *UserHandler) Register(c *gin.Context) {
 			resp.ERROR(c, "验证码错误")
 			return
 		}
+		logger.Infof("Regist info : %s , %s", data.RegWay, data.Code)
 	}
-	
+
 	initPower := h.App.SysConfig.InitPower
 	if data.RegWay == "mobile" {
 		initPower = h.App.SysConfig.PhoneInitPower
 	} else if data.RegWay == "email" {
 		initPower = h.App.SysConfig.EmailInitPower
 	}
-
+	logger.Infof("initPower : %d ", initPower)
 	// 验证邀请码
 	inviteCode := model.InviteCode{}
 	if data.InviteCode != "" {
